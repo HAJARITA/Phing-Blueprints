@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="phing-cookbook" default="some-task">
+    <!-- Environment has to be set before each task if not set yet and respective property file loaded. -->
+    <if>
+        <not>
+            <isset property="environment" />
+        </not>
+        <then>
+            <input propertyName="environment" defaultValue="development" validArgs="development, staging, production">What's the target environment?</input>
+            <property file="build/properties/${environment}.properties" />
+            <echo msg="Property file for ${environment} loaded..." />
+        </then>
+    </if>
+</project>
