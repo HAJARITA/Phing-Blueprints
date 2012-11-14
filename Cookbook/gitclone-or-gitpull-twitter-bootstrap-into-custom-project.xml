@@ -1,10 +1,16 @@
-<!-- Helper target for updating twitter-bootstrap. Make sure the git bin/ is on your system path -->
+<!--
+    Helper target for updating twitter-bootstrap. Make sure the git bin/ is on your system path.
+    This example can be adapted to any library you need to install in a custom way.
+-->
+
 <target name="update-tb">
-    <property name="package.name.tb" value="sass-twitter-bootstrap" />
+    <property name="package.name.tb" value="bootstrap" />
+
+    <!-- Try to clone the repo, if that throws an error, catch it and pull instead -->
     <trycatch property="error">
         <try>
             <gitclone
-                    repository="http://github.com/jlong/${package.name.tb}.git"
+                    repository="http://github.com/twitter/${package.name.tb}.git"
                     targetPath="build/${package.name.tb}"
                     gitPath="git" />
         </try>
@@ -15,20 +21,25 @@
         </catch>
     </trycatch>
 
-    <copy todir="httpdocs/sass/partials" overwrite="true">
-        <fileset dir="build/${package.name.tb}/lib">
-            <include name="_*.scss" />
-            <exclude name="_variables.scss" />
+    <!-- Copy all less files to the less folder in the project, don't copy the variables just yet -->
+    <copy todir="myproject/less/bootstrap" overwrite="true">
+        <fileset dir="build/${package.name.tb}/less">
+            <include name="*.less" />
+            <exclude name="variables.less" />
         </fileset>
     </copy>
-    <copy tofile="httpdocs/sass/partials/_variables-new.scss" file="build/${package.name.tb}/lib/_variables.scss" overwrite="true" />
-    <copy tofile="httpdocs/sass/partials/_bootstrap.scss" file="build/${package.name.tb}/lib/bootstrap.scss" overwrite="true" />
-    <copy tofile="httpdocs/sass/partials/_responsive.scss" file="build/${package.name.tb}/lib/responsive.scss" overwrite="true" />
+
+    <!-- Copy the variables but rename them so we can make a diff and see what has changed. -->
+    <copy tofile="myproject/less/variables-new.less" file="build/${package.name.tb}/less/variables.less" overwrite="true" />
+
+    <!-- Copy the images to our public folder. -->
     <copy todir="httpdocs/img" overwrite="true">
         <fileset dir="build/${package.name.tb}/img">
             <include name="*.png" />
         </fileset>
     </copy>
+
+    <!-- Copy the js files to our public folder. -->
     <copy todir="httpdocs/js/bootstrap" overwrite="true">
         <fileset dir="build/${package.name.tb}/js">
             <include name="bootstrap-*.js" />

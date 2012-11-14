@@ -1,0 +1,23 @@
+<target name="install-dependencies">
+    <echo message="[Dependencies] Prepare composer.json ..." />
+    <copy file="build/composer.json.template" tofile="composer.json" overwrite="true">
+        <filterchain>
+            <replacetokens begintoken="##" endtoken="##">
+                <!-- Replace tokens in the composer.json.template in case you want to install for a specific environment -->
+            </replacetokens>
+        </filterchain>
+    </copy>
+    <available file="composer.json" property="composer-json-exists" value="true" />
+    <fail unless="composer-json-exists" message="Token replacements for composer.json failed." />
+
+    <!-- This assumes that composer.phar is available, otherwise you can wget it. -->
+    <echo message="[Dependencies] Updating composer itself..." />
+    <exec command="php composer.phar self-update" />
+    <echo message="[Dependencies] Installing dependent packages with composer..." />
+    <exec command="php composer.phar install" />
+
+    <!-- At the end of the installation a lock file is created. This can be used to check if the installation was finished. -->
+    <available file="composer.lock" property="composer-lock-exists" value="true" />
+    <fail unless="composer-lock-exists" message="Installation of dependencies with composer seems to have failed." />
+    <echo message="[Dependencies] composer.lock was successfully created, packages were installed..." />
+</target>
