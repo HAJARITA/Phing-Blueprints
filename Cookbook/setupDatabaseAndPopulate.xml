@@ -1,0 +1,20 @@
+<target name="recreate-db">
+    <echo message="[Data] Drop and recreate database..." />
+    <pdosqlexec
+            url="mysql:host=${db.project.host};dbname=${db.project.dbname}"
+            userid="${db.project.username}"
+            password="${db.project.password}"
+            onerror="abort">
+        DROP DATABASE IF EXISTS `${db.project.dbname}`;
+        CREATE DATABASE `${db.project.dbname}`;
+    </pdosqlexec>
+    <echo message="[Data] Populate database with schema and start-data ..." />
+    <pdosqlexec
+            url="mysql:host=${db.project.host};dbname=${db.project.dbname}"
+            userid="${db.project.username}"
+            password="${db.project.password}"
+            onerror="abort">
+        <transaction src="${basePath}/db-versioning/schema.sql" />
+        <transaction src="${basePath}/db-versioning/start-data.sql" />
+    </pdosqlexec>
+</target>
